@@ -48,9 +48,11 @@ ggggggggggggggggggggg
 
 29 Mar 22 - v1.0b1 : Set default spindle to Makita, initial attempt to add pen offset inputs to Fusion 360 post processor screen
 29 Mar 22 - v1.0b2 : More changes to try to make the pen section show up
+29 Mar 22 - v1.0b3 : Added code to detect if G55 is setup, and try to insert something a test message
+29 Mar 22 - v1.0b4 : Another try at the test message
 
 */
-obversion = 'v1.0b2';
+obversion = 'v1.0b4';
 description = "OpenGarbel CNC : GRBL/BlackBox";  // cannot have brackets in comments
 longDescription = description + " : Post" + obversion; // adds description to post library diaglog box
 vendor = "OpenGarbel";
@@ -870,6 +872,11 @@ function onSection()
       writeBlock(gWCSOutput.format(53 + section.workOffset));  // use the selected WCS
       currentworkOffset = 53 + section.workOffset;
       }
+	if (currentworkOffset == 55)
+	  {
+		  writeComment("G55 - Pen Setup Engaged");
+		  writeln("GarbelTest90");
+	  }
    writeBlock(gAbsIncModal.format(90));  // Set to absolute coordinates
 
    cutmode = -1;
