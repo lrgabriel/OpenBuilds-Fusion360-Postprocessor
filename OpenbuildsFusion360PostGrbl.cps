@@ -41,11 +41,19 @@ Changelog
 12 Nov 2021 - V1.0.28 : Added property group names, fixed default router selection, now uses permittedCommentChars  (sharmstr)
 24 Nov 2021 - V1.0.28 : Improved coolant selection, tweaked property groups, tweaked G53 generation, links for help in comments.
 21 Feb 2022 - V1.0.29 : Fix sideeffects of drill operation having rapids even when in noRapid mode by always resetting haveRapid in onSection
+
+ggggggggggggggggggggg
+Split off to GarbelMod 29 Mar 22
+ggggggggggggggggggggg
+
+29 Mar 22 - v1.0b1 : Set default spindle to Makita, initial attempt to add pen offset inputs to Fusion 360 post processor screen
+29 Mar 22 - v1.0b2 : More changes to try to make the pen section show up
+
 */
-obversion = 'V1.0.29';
-description = "OpenBuilds CNC : GRBL/BlackBox";  // cannot have brackets in comments
+obversion = 'v1.0b2';
+description = "OpenGarbel CNC : GRBL/BlackBox";  // cannot have brackets in comments
 longDescription = description + " : Post" + obversion; // adds description to post library diaglog box
-vendor = "OpenBuilds";
+vendor = "OpenGarbel";
 vendorUrl = "https://openbuilds.com";
 model = "GRBL";
 legal = "";
@@ -74,7 +82,7 @@ properties =
    spindleOnOffDelay: 1.8,        // time (in seconds) the spindle needs to get up to speed or stop, or laser/plasma pierce delay
    spindleTwoDirections : false,  // true : spindle can rotate clockwise and counterclockwise, will send M3 and M4. false : spindle can only go clockwise, will only send M3
    hasCoolant : false,            // true : machine uses the coolant output, M8 M9 will be sent. false : coolant output not connected, so no M8 M9 will be sent
-   routerType : "other",
+   routerType : "Makita",
    generateMultiple: true,        // specifies if a file should be generated for each tool change
    machineHomeZ : -10,            // absolute machine coordinates where the machine will move to at the end of the job - first retracting Z, then moving home X Y
    machineHomeX : -10,            // always in millimeters
@@ -87,7 +95,8 @@ properties =
    //plasma stuff
    plasma_usetouchoff : false, // use probe for touchoff if true
    plasma_touchoffOffset : 5.0, // offset from trigger point to real Z0, used in G10 line
-
+   penXOffset : 0.0,
+   penYOffset : 0.0,
    linearizeSmallArcs: true,     // arcs with radius < toolRadius have radius errors, linearize instead?
    machineVendor : "OpenBuilds",
    modelMachine : "Generic",
@@ -102,12 +111,13 @@ properties =
 groupDefinitions = {
     //postInfo: {title: "OpenBuilds Post Documentation: https://docs.openbuilds.com/doku.php", description: "", order: 0},
     spindle: {title: "Spindle", description: "Spindle options", order: 1},
-    safety: {title: "Safety", description: "Safety options", order: 2},
-    toolChange: {title: "Tool Changes", description: "Tool change options", order: 3},
-    startEndPos: {title: "Job Start Z and Job End X,Y,Z Coordinates", description: "Set the spindle start and end position", order: 4},
-    arcs: {title: "Arcs", description: "Arc options", order: 5},
-    laserPlasma: {title: "Laser / Plasma", description: "Laser / Plasma options", order: 6},
-    machine: {title: "Machine", description: "Machine options", order: 7}
+    pen: {title: "Pen", description: "Pen plotter options", order: 2},
+    safety: {title: "Safety", description: "Safety options", order: 3},
+    toolChange: {title: "Tool Changes", description: "Tool change options", order: 4},
+    startEndPos: {title: "Job Start Z and Job End X,Y,Z Coordinates", description: "Set the spindle start and end position", order: 5},
+    arcs: {title: "Arcs", description: "Arc options", order: 6},
+    laserPlasma: {title: "Laser / Plasma", description: "Laser / Plasma options", order: 7},
+    machine: {title: "Machine", description: "Machine options", order: 8}
 };
 propertyDefinitions = {
 /*
@@ -148,6 +158,18 @@ propertyDefinitions = {
       description: "Yes: machine uses the coolant output, M8 M9 will be sent. No : coolant output not connected, so no M8 M9 will be sent",
       type: "boolean",
     },
+	penXOffset:  {
+	  group: "pen",
+	  title: "Pen X Offset",
+	  description: "Distance along X between spindle zero and pen zero",
+	  type: "spatial",
+	},
+	penYOffset:  {
+	  group: "pen",
+	  title: "Pen Y Offset",
+	  description: "Distance along Y between spindle zero and pen zero",
+	  type: "spatial",
+	},	
     checkFeed:  {
       group: "safety",
       title: "SAFETY: Check tool feedrate",
