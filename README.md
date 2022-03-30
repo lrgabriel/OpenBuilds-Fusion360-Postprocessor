@@ -3,6 +3,8 @@
 Creates .nc files optimized for GRBL based Openbuilds-style machines.
 Supports router and laser operations.
 
+This fork is to support a pen plotter in addition to the main router - it asks the user for X-Y offsets between the router and the pen, detects if a toolpath with WCS2 / G55 is used, and if so, includes a G10 line that sets the G55 zeros to the G54 zero plus the offsets.
+
 V1.0.25 supports plasma torch touchoff probing.
 * Read the [instructions](https://github.com/OpenBuilds/OpenBuilds-Fusion360-Postprocessor/blob/master/README-plasma.md)
 
