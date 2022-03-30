@@ -46,13 +46,15 @@ ggggggggggggggggggggg
 Split off to GarbelMod 29 Mar 22
 ggggggggggggggggggggg
 
-29 Mar 22 - v1.0b1 : Set default spindle to Makita, initial attempt to add pen offset inputs to Fusion 360 post processor screen
-29 Mar 22 - v1.0b2 : More changes to try to make the pen section show up
-29 Mar 22 - v1.0b3 : Added code to detect if G55 is setup, and try to insert something a test message
-29 Mar 22 - v1.0b4 : Another try at the test message
+29 Mar 22 - vG1.0b1 : Set default spindle to Makita, initial attempt to add pen offset inputs to Fusion 360 post processor screen
+29 Mar 22 - vG1.0b2 : More changes to try to make the pen section show up
+29 Mar 22 - vG1.0b3 : Added code to detect if G55 is setup, and try to insert something a test message
+29 Mar 22 - vG1.0b4 : Another try at the test message
+30 Mar 22 - vG1.0b5 : Post processor now asks when run for X and Y offsets, and outputs a properly formatted G10 block to set up WCS2/G55 accordingly
+30 Mar 22 - vG1.0 : Changed version numbering to be less confusing with upstream OpenBuilds development.  Released to first test on machine.
 
 */
-obversion = 'v1.0b4';
+obversion = 'v1.0b5';
 description = "OpenGarbel CNC : GRBL/BlackBox";  // cannot have brackets in comments
 longDescription = description + " : Post" + obversion; // adds description to post library diaglog box
 vendor = "OpenGarbel";
@@ -97,8 +99,8 @@ properties =
    //plasma stuff
    plasma_usetouchoff : false, // use probe for touchoff if true
    plasma_touchoffOffset : 5.0, // offset from trigger point to real Z0, used in G10 line
-   penXOffset : 0.0,
-   penYOffset : 0.0,
+   penXOffset : 0.0, // offset between router spindle and pen mount, X
+   penYOffset : 0.0, // offset between router spindle and pen mount, Y
    linearizeSmallArcs: true,     // arcs with radius < toolRadius have radius errors, linearize instead?
    machineVendor : "OpenBuilds",
    modelMachine : "Generic",
@@ -872,10 +874,10 @@ function onSection()
       writeBlock(gWCSOutput.format(53 + section.workOffset));  // use the selected WCS
       currentworkOffset = 53 + section.workOffset;
       }
-	if (currentworkOffset == 55)
+	if (currentworkOffset == 55) // If WCS2 i.e. G55 is used, assume it's the pen, and do the following
 	  {
-		  writeComment("G55 - Pen Setup Engaged");
-		  writeln("GarbelTest90");
+		  writeComment("G55 detected - Pen Setup Engaged");
+		  writeln("G10 L2 P2 X[" + properties.penXOffset + " + #5221]" + " Y[" + properties.penYOffset + " + #5222]"); // Redefine WCS2/G55 X and Y to be offset by the specified amount from whatever is stored in G54 X and Y
 	  }
    writeBlock(gAbsIncModal.format(90));  // Set to absolute coordinates
 
