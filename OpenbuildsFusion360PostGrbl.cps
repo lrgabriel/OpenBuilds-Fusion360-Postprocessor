@@ -52,9 +52,10 @@ ggggggggggggggggggggg
 29 Mar 22 - vG1.0b4 : Another try at the test message
 30 Mar 22 - vG1.0b5 : Post processor now asks when run for X and Y offsets, and outputs a properly formatted G10 block to set up WCS2/G55 accordingly
 30 Mar 22 - vG1.0 : Changed version numbering to be less confusing with upstream OpenBuilds development.  Released to first test on machine.
+6 Apr 22 - vG1.10b1 : If using plasma mode (i.e. waterjet), disable M3 and M5 commands (in the OnCommand function
 
 */
-obversion = 'v1.0b5';
+obversion = 'v1.1b1';
 description = "OpenGarbel CNC : GRBL/BlackBox";  // cannot have brackets in comments
 longDescription = description + " : Post" + obversion; // adds description to post library diaglog box
 vendor = "OpenGarbel";
@@ -1334,9 +1335,9 @@ function onCommand(command)
          if (!haveRapid)
             writeln("");
          powerOn = false;
-         if (isPlasma)
-            writeBlock(mFormat.format(5));
-         break;
+         //if (isPlasma)
+         //   writeBlock(mFormat.format(5));
+         //break;
       case COMMAND_POWER_ON:
          //writeComment("power ON");
          if (!haveRapid)
@@ -1360,7 +1361,7 @@ function onCommand(command)
                else
                   writeBlock( gMotionModal.format(0), zOutput.format(plasma_pierceHeight));
                }
-            writeBlock(mFormat.format(3), sOutput.format(power));
+            //writeBlock(mFormat.format(3), sOutput.format(power));
             }
          break;
       }
