@@ -300,6 +300,7 @@ var isNewfile = false;  // set true when a new file has just been started
 
 var isLaser = false;    // set true for laser/water/
 var isPlasma = false;   // set true for plasma
+var isPen = false;		// set true for pen
 var power = 0;          // the setpower value, for S word when laser cutting
 var cutmode = 0;        // M3 or M4
 var Zmax = 0;
